@@ -30,7 +30,6 @@ namespace Net
 		}
 		printf("Success\n");
 
-		printf("Server started at:%s:%d\n", inet_ntoa(info.sin_addr), ntohs(info.sin_port));
 	}
 
 	void Client::connect()
