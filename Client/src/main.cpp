@@ -2,7 +2,14 @@
 
 int main()
 {
-	Net::Client client(8888, "127.0.0.1");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	std::string ipaddress;
+	printf("Input server ipaddress: ");
+	std::getline(std::cin, ipaddress);
+	Net::Client client(8888, ipaddress);
 	client.connect();
+
+
 	return 0;
 }

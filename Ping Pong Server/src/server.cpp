@@ -1,6 +1,7 @@
 #include "server.h"
 #pragma warning(disable:4996)
 
+
 namespace Net
 {
 	Server::Server(int port, std::string ipaddress)
@@ -9,7 +10,8 @@ namespace Net
 		port(port),
 		ipaddress(ipaddress),
 		serversocket(INVALID_SOCKET),
-		info{ 0 }{}
+		info{ 0 },
+		infolength(sizeof(info)){}
 
 	void Server::init()
 	{
@@ -19,11 +21,9 @@ namespace Net
 
 
 		printf("WSA init\n");
-		WORD wVersionRequested = MAKEWORD(2, 2);
-		int err = WSAStartup(wVersionRequested, &wsa);
-		if (err != 0) {
-			printf("WSAStartup failed with error: %d\n", err);
-			return;
+		if (WSAStartup(MAKEWORD(2, 2), &wsa) == SOCKET_ERROR) {
+			printf("Couldn't init WSA\n");
+			__debugbreak();
 		}
 		printf("WSA success\n");
 
@@ -32,22 +32,22 @@ namespace Net
 
 		if ((serversocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR)
 		{
+			printf("Couldn't create socket\n");
 			__debugbreak();
 		}
 
 		printf("Success!\n");
 
-		infolength = sizeof(info);
 		printf("bind socket\n");
 		if ((bind(serversocket, (SOCKADDR*)&info, infolength)) != 0)
 		{
+			printf("Couldn't bind socket\n");
 			__debugbreak();
 		}
 		printf("socket binded\n");
 
 
 		printf("Server started at:%s:%d\n", inet_ntoa(info.sin_addr), ntohs(info.sin_port));
-
 	}
 
 
@@ -73,23 +73,28 @@ namespace Net
 
 	void Server::process()
 	{
+		
 		printf("packet from:%s:%d\n", inet_ntoa(info.sin_addr), ntohs(info.sin_port));
+		message = "Your port: " + std::to_string(ntohs(info.sin_port)) + "\nYour message: " ;
+		
 		for (unsigned i = 0; i < reclength; i++)
 		{
 			printf("%c", buffer[i]);
+			message += buffer[i];
 		}
 		printf("\n");
 	}
 	void Server::send()
 	{
-		if ((sendto(serversocket, buffer, reclength, 0, (struct sockaddr*)&info, infolength)) == SOCKET_ERROR)
+
+		if ((sendto(serversocket, message.c_str(), message.size(), 0, (struct sockaddr*)&info, infolength)) == SOCKET_ERROR)
 		{
 			printf("Send Error %d\n", WSAGetLastError());
 			exit(EXIT_FAILURE);
 		}
 	}
 	Server::~Server()
-	{ 
+	{
 		WSACleanup();
 		closesocket(serversocket);
 	}

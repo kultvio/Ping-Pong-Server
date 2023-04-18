@@ -1,8 +1,11 @@
 #include "server.h"
+#include <Windows.h>
 //UTP
 int main()
 {
-	Net::Server server(8888, "127.0.0.1");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	Net::Server server(8888, "0.0.0.0");
 	server.start();
 	return 0;
 }

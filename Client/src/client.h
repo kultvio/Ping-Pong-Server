@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include <cassert>
-
+#include <ctime>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -27,6 +27,8 @@ namespace Net
 		struct sockaddr_in info;
 		int infolength;
 		int reclength;
+		unsigned int start_time;
+		unsigned int end_time;
 	public:
 		Client(int, std::string);
 		~Client();
